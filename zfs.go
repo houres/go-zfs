@@ -245,6 +245,19 @@ func (d *Dataset) SendSnapshot(output io.Writer) error {
 	return err
 }
 
+// SendCompressedSnapshot sends a compressed ZFS stream of a snapshot to the
+// input io.Writer. An error will be returned if the input dataset is not
+// of snapshot type.
+func (d *Dataset) SendCompressedSnapshot(output io.Writer) error {
+	if d.Type != DatasetSnapshot {
+		return errors.New("can only send snapshots")
+	}
+
+	c := command{Command: "zfs", Stdout: output}
+	_, err := c.Run("send", "-c", d.Name)
+	return err
+}
+
 // CreateVolume creates a new ZFS volume with the specified name, size, and
 // properties.
 // A full list of available ZFS properties may be found here:
